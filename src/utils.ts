@@ -69,7 +69,7 @@ export const getErrors = (fields: FieldBin[]): string[] => {
   const ipBin = fields.map(f => f.bin).join('');
   const ipHex = binaryToHex(ipBin);
   if (fields.length === 0) {
-    return [];
+    return ['No fields found'];
   }
   const ipVersion = binaryToDecimal(fields[0].bin);
   if (ipVersion !== 4) {

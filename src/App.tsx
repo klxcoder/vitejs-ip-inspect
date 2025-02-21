@@ -20,6 +20,9 @@ function App() {
     const { fields, ipBinTmp } = getFields(FIELDS, ipBin);
     const errors = getErrors(fields);
     setErrors(errors);
+    if (errors.length > 0) {
+      return;
+    }
     const ipHeaderLength = binaryToDecimal(fields[1].bin);
     const { fields: options } = getFields([
       {
