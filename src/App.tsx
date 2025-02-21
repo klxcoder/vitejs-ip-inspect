@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import './table.css';
 import './AppView.css';
-import { binaryToDecimal, binaryToHex, hexToBinary, decimalToHex } from './utils';
+import { binaryToDecimal, binaryToHex, hexToBinary, decimalToHex, getFields } from './utils';
 import { EXAMPLE_IP_HEX, FIELDS } from './const';
-import { FieldBin, Field } from './types';
+import { FieldBin } from './types';
 import AppView from './AppView';
 
 function App() {
@@ -15,24 +15,6 @@ function App() {
   useEffect(() => {
     setIpBin(hexToBinary(ipHex));
   }, [ipHex]);
-
-  const getFields = (ipFields: Field[], ipBin: string): {
-    fields: FieldBin[],
-    ipBinTmp: string,
-  } => {
-    let ipBinTmp = ipBin;
-    const fields = [];
-    for (const field of ipFields) {
-      if (ipBinTmp.length >= field.length) {
-        fields.push({
-          ...field,
-          bin: ipBinTmp.slice(0, field.length),
-        });
-        ipBinTmp = ipBinTmp.slice(field.length);
-      }
-    }
-    return { fields, ipBinTmp };
-  }
 
   useEffect(() => {
     const { fields, ipBinTmp } = getFields(FIELDS, ipBin);

@@ -1,3 +1,5 @@
+import { Field, FieldBin } from "./types";
+
 export const ipHexFn = (ipHex: string): string => {
   return ipHex.replace(/[^0-9A-Fa-f]/g, '').toLowerCase();
 };
@@ -43,4 +45,22 @@ export const binToIpProtocol = (bin: string): string => {
     17: 'UDP',
   };
   return `${protocolDecimal} (${obj[protocolDecimal] || 'Unknown Protocol'})`;
+}
+
+export const getFields = (ipFields: Field[], ipBin: string): {
+  fields: FieldBin[],
+  ipBinTmp: string,
+} => {
+  let ipBinTmp = ipBin;
+  const fields = [];
+  for (const field of ipFields) {
+    if (ipBinTmp.length >= field.length) {
+      fields.push({
+        ...field,
+        bin: ipBinTmp.slice(0, field.length),
+      });
+      ipBinTmp = ipBinTmp.slice(field.length);
+    }
+  }
+  return { fields, ipBinTmp };
 }
