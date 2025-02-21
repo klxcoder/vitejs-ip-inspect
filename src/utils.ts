@@ -47,6 +47,10 @@ export const binToIpProtocol = (bin: string): string => {
   return `${protocolDecimal} (${obj[protocolDecimal] || 'Unknown Protocol'})`;
 }
 
+function decimalToBinary(decimal: number, bits: number) {
+  return decimal.toString(2).padStart(bits, '0');
+}
+
 export const getFields = (ipFields: Field[], ipBin: string): {
   fields: FieldBin[],
   ipBinTmp: string,
@@ -114,13 +118,51 @@ export const getIpHeaderErrors = (fields: FieldBin[]): string[] => {
   return [];
 }
 
+export const getTcpHeaderErrors = (ipHeaderFields: FieldBin[], tcpHeaderFields: FieldBin[]): string[] => {
+  const sourceIpAddress = ipHeaderFields.find(field => field.id === 'ip-source-address')?.bin;
+  const destinationIpAddress = ipHeaderFields.find(field => field.id === 'ip-destination-address')?.bin;
+  const zeros = '0'.repeat(8);
+  const protocol = '00000110'; // 6 (TCP)
+  const ipTotalLength = binaryToDecimal(ipHeaderFields.find(field => field.id === 'ip-total-length')?.bin || '');
+  const ipHeaderLength = binaryToDecimal(ipHeaderFields.find(field => field.id === 'ip-header-length')?.bin || '');
+  const tcpLength = decimalToBinary(ipTotalLength - ipHeaderLength * 4, 16);
+  const tcpPseudoHeader: string = [
+    sourceIpAddress,
+    destinationIpAddress,
+    zeros,
+    protocol,
+    tcpLength,
+  ].join('');
+  let checksumBin: string = [
+    tcpPseudoHeader,
+    tcpHeaderFields.filter(field => field.id !== 'tcp-checksum').map(field => field.bin).join(''),
+    // TODO: Add tcp options and tcp data
+  ].join('');
+  if (checksumBin.length % 16 !== 8) {
+    checksumBin += '0'.repeat(8);
+  }
+  console.log(binaryToHex(checksumBin));
+  const checksumArr = checksumBin.match(/.{16}/g) || [];
+  const checksum = checksumArr.reduce((acc, bin) => {
+    const sum = acc + binaryToDecimal(bin);
+    if (sum >= 0xffff) {
+      return sum - 0xffff;
+    }
+    return sum;
+  }, 0);
+  console.log('checksum = ', decimalToHex(checksum));
+  return [];
+}
+
 export const getIpHeaderOptionsFields = (ipHeaderLength: number) => {
-  return [
+  const ipHeaderOptionsFields: Field[] = [
     {
+      id: 'ip-options',
       title: 'Options',
       length: (ipHeaderLength - 5) * 32,
       description: 'The options field of the packet',
       valueFn: binaryToHex,
     },
   ]
+  return ipHeaderOptionsFields;
 }
