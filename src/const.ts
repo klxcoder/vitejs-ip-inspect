@@ -89,3 +89,66 @@ export const IP_HEADER_FIELDS: Field[] = [
     valueFn: binaryToIP,
   },
 ];
+
+export const TCP_HEADER_FIELDS: Field[] = [
+  {
+    title: 'Source Port',
+    length: 16,
+    description: 'The port number of the sender',
+    valueFn: binaryToDecimal,
+  },
+  {
+    title: 'Destination Port',
+    length: 16,
+    description: 'The port number of the receiver',
+    valueFn: binaryToDecimal,
+  },
+  {
+    title: 'Sequence Number',
+    length: 32,
+    description: 'The sequence number of the first byte in the segment',
+    valueFn: binaryToDecimal,
+  },
+  {
+    title: 'Acknowledgment Number',
+    length: 32,
+    description: 'The acknowledgment number indicating the next expected byte',
+    valueFn: binaryToDecimal,
+  },
+  {
+    title: 'Data Offset',
+    length: 4,
+    description: 'The size of the TCP header in 32-bit words',
+    valueFn: binaryToDecimal,
+  },
+  {
+    title: 'Reserved',
+    length: 3,
+    description: 'Reserved for future use, must be set to zero',
+    valueFn: binaryToDecimal,
+  },
+  {
+    title: 'Flags',
+    length: 9,
+    description: 'Control flags (e.g., SYN, ACK, FIN, etc.)',
+    valueFn: binaryToDecimal,
+  },
+  {
+    title: 'Window Size',
+    length: 16,
+    description: 'The number of bytes the sender is willing to receive',
+    valueFn: binaryToDecimal,
+  },
+  {
+    title: 'Checksum',
+    length: 16,
+    description: 'The checksum for error-checking the header and data',
+    valueFn: (bin: string) => `0x${binaryToHex(bin)}`,
+  },
+  {
+    title: 'Urgent Pointer',
+    length: 16,
+    description: 'Indicates the position of urgent data, if the URG flag is set',
+    valueFn: binaryToDecimal,
+  },
+];

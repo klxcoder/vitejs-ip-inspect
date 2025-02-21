@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import './table.css';
 import './AppView.css';
-import { binaryToDecimal, binaryToHex, hexToBinary, getFields, getIpHeaderErrors, getIpHeaderOptionsFields } from './utils';
-import { EXAMPLE_IP_HEX, IP_HEADER_FIELDS } from './const';
+import { binaryToDecimal, hexToBinary, getFields, getIpHeaderErrors, getIpHeaderOptionsFields } from './utils';
+import { EXAMPLE_IP_HEX, IP_HEADER_FIELDS, TCP_HEADER_FIELDS } from './const';
 import { FieldBin } from './types';
 import AppView from './AppView';
 
@@ -27,24 +27,31 @@ function App() {
     // Process IP Header Options
     const ipHeaderLength = binaryToDecimal(ipHeaderFields[1].bin);
     const { fields: ipHeaderOptionsFields, ipBinTmp: ipHeaderOptionsBin } = getFields(getIpHeaderOptionsFields(ipHeaderLength), ipHeaderBin);
+    // fields
+    const fields = [...ipHeaderFields, ...ipHeaderOptionsFields];
     // Process Protocol
     const protocol = ipHeaderFields.find((field) => field.title === 'Protocol');
     if (protocol) {
       const protocolDecimal = binaryToDecimal(protocol.bin);
-      console.log(binaryToHex(ipHeaderOptionsBin));
       switch (protocolDecimal) {
-        case 1:
+        case 1: {
           // Process ICMP
           break;
-        case 6:
+        }
+        case 6: {
           // Process TCP
+          const { fields: tcpHeaderFields } = getFields(TCP_HEADER_FIELDS, ipHeaderOptionsBin);
+          fields.push(...tcpHeaderFields);
+          // TODO: Check TCP Header
           break;
-        case 17:
+        }
+        case 17: {
           // Process UDP
           break;
+        }
       }
     }
-    setFields([...ipHeaderFields, ...ipHeaderOptionsFields]);
+    setFields(fields);
   }, [ipBin]);
 
   return (
