@@ -1,53 +1,7 @@
 import { useState, useEffect } from 'react';
 import './table.css';
 import './App.css';
-
-const ipHexFn = (ipHex: string): string => {
-  return ipHex.replace(/[^0-9A-Fa-f]/g, '').toLowerCase();
-};
-
-const hexToBinary = (hex: string): string => {
-  if (!hex) return '';
-  return hex
-    .match(/.{1}/g) // Split each hex digit
-    ?.map(h => parseInt(h, 16).toString(2).padStart(4, '0')) // Convert to binary and pad
-    .join('') || '';
-}
-
-const binaryToHex = (binary: string): string => {
-  if (!binary) return '';
-  return binary
-    .match(/.{4}/g) // Split into groups of 4
-    ?.map(b => parseInt(b, 2).toString(16)) // Convert to hex
-    .join('') || '';
-}
-
-const binaryToDecimal = (binary: string): number => {
-  return parseInt(binary, 2);
-};
-
-const binaryToIP = (binaryStr: string): string => {
-  if (binaryStr.length !== 32) {
-    throw new Error("Binary string must be exactly 32 bits long");
-  }
-
-  const octets = binaryStr.match(/.{8}/g)?.map(b => parseInt(b, 2)) || [];
-  return octets.join(".");
-}
-
-const decimalToHex = (decimal: number): string => {
-  return decimal.toString(16);
-}
-
-const binToIpProtocol = (bin: string): string => {
-  const protocolDecimal = binaryToDecimal(bin);
-  const obj: { [key: number]: string } = {
-    1: 'ICMP',
-    6: 'TCP',
-    17: 'UDP',
-  };
-  return `${protocolDecimal} (${obj[protocolDecimal] || 'Unknown Protocol'})`;
-}
+import { binaryToDecimal, binToIpProtocol, binaryToHex, binaryToIP, hexToBinary, decimalToHex, ipHexFn } from './utils';
 
 const EXAMPLE_IP_HEX = '4500003c660440004006d6b57f0000017f000001bd180007eecf60e400000000a002ffd7fe3000000204ffd70402080aba9bf91f0000000001030307'; // SYN packet
 
