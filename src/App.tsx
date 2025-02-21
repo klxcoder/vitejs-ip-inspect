@@ -16,13 +16,13 @@ function App() {
     setIpBin(hexToBinary(ipHex));
   }, [ipHex]);
 
-  const getFields = (FIELDS: Field[], ipBin: string): {
+  const getFields = (ipFields: Field[], ipBin: string): {
     fields: FieldBin[],
     ipBinTmp: string,
   } => {
     let ipBinTmp = ipBin;
     const fields = [];
-    for (const field of FIELDS) {
+    for (const field of ipFields) {
       if (ipBinTmp.length >= field.length) {
         fields.push({
           ...field,
