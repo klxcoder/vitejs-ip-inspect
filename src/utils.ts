@@ -65,7 +65,7 @@ export const getFields = (ipFields: Field[], ipBin: string): {
   return { fields, ipBinTmp };
 }
 
-export const getErrors = (fields: FieldBin[]): string[] => {
+export const getIpHeaderErrors = (fields: FieldBin[]): string[] => {
   const ipBin = fields.map(f => f.bin).join('');
   const ipHex = binaryToHex(ipBin);
   if (fields.length === 0) {
@@ -112,4 +112,15 @@ export const getErrors = (fields: FieldBin[]): string[] => {
     ]
   }
   return [];
+}
+
+export const getIpHeaderOptionsFields = (ipHeaderLength: number) => {
+  return [
+    {
+      title: 'Options',
+      length: (ipHeaderLength - 5) * 32,
+      description: 'The options field of the packet',
+      valueFn: binaryToHex,
+    },
+  ]
 }

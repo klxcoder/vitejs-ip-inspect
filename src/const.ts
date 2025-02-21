@@ -3,7 +3,7 @@ import { binaryToDecimal, binToIpProtocol, binaryToHex, binaryToIP } from "./uti
 
 export const EXAMPLE_IP_HEX = '4500003c660440004006d6b57f0000017f000001bd180007eecf60e400000000a002ffd7fe3000000204ffd70402080aba9bf91f0000000001030307'; // SYN packet
 
-export const FIELDS: Field[] = [
+export const IP_HEADER_FIELDS: Field[] = [
   {
     title: 'Version',
     length: 4,

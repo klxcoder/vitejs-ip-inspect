@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import './table.css';
 import './AppView.css';
-import { binaryToDecimal, binaryToHex, hexToBinary, getFields, getErrors } from './utils';
-import { EXAMPLE_IP_HEX, FIELDS } from './const';
+import { binaryToDecimal, binaryToHex, hexToBinary, getFields, getIpHeaderErrors, getIpHeaderOptionsFields } from './utils';
+import { EXAMPLE_IP_HEX, IP_HEADER_FIELDS } from './const';
 import { FieldBin } from './types';
 import AppView from './AppView';
 
@@ -17,38 +17,35 @@ function App() {
   }, [ipHex]);
 
   useEffect(() => {
-    const { fields, ipBinTmp } = getFields(FIELDS, ipBin);
-    const errors = getErrors(fields);
-    setErrors(errors);
-    if (errors.length > 0) {
+    // Process IP Header
+    const { fields: ipHeaderFields, ipBinTmp: ipHeaderBin } = getFields(IP_HEADER_FIELDS, ipBin);
+    const ipHeaderErrors = getIpHeaderErrors(ipHeaderFields);
+    setErrors(ipHeaderErrors);
+    if (ipHeaderErrors.length > 0) {
       return;
     }
-    const ipHeaderLength = binaryToDecimal(fields[1].bin);
-    const { fields: options } = getFields([
-      {
-        title: 'Options',
-        length: (ipHeaderLength - 5) * 32,
-        description: 'The options field of the packet',
-        valueFn: binaryToHex,
-      },
-    ], ipBinTmp);
-    const protocol = fields.find((field) => field.title === 'Protocol');
+    // Process IP Header Options
+    const ipHeaderLength = binaryToDecimal(ipHeaderFields[1].bin);
+    const { fields: ipHeaderOptionsFields, ipBinTmp: ipHeaderOptionsBin } = getFields(getIpHeaderOptionsFields(ipHeaderLength), ipHeaderBin);
+    // Process Protocol
+    const protocol = ipHeaderFields.find((field) => field.title === 'Protocol');
     if (protocol) {
       const protocolDecimal = binaryToDecimal(protocol.bin);
+      console.log(binaryToHex(ipHeaderOptionsBin));
       switch (protocolDecimal) {
         case 1:
-          // Will handle ICMP
+          // Process ICMP
           break;
         case 6:
-          // Will handle TCP
+          // Process TCP
           break;
         case 17:
-          // Will handle UDP
+          // Process UDP
           break;
       }
     }
-    setFields([...fields, ...options]);
-  }, [ipBin, ipHex]);
+    setFields([...ipHeaderFields, ...ipHeaderOptionsFields]);
+  }, [ipBin]);
 
   return (
     <AppView
