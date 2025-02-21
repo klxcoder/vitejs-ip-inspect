@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import './table.css';
-import './App.css';
-import { binaryToDecimal, binaryToHex, hexToBinary, decimalToHex, ipHexFn } from './utils';
+import './AppView.css';
+import { binaryToDecimal, binaryToHex, hexToBinary, decimalToHex } from './utils';
 import { EXAMPLE_IP_HEX, FIELDS } from './const';
 import { FieldBin, Field } from './types';
+import AppView from './AppView';
 
 function App() {
   const [ipHex, setIpHex] = useState(EXAMPLE_IP_HEX);
@@ -111,40 +112,12 @@ function App() {
   }, [ipBin, ipHex]);
 
   return (
-    <div className="app">
-      <textarea
-        value={ipHex}
-        onChange={(e) => setIpHex(ipHexFn(e.target.value))}
-        placeholder="Enter IPv4 in hex format"
-      />
-      <ul className="errors">
-        {errors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </ul>
-      <table className="details">
-        <thead>
-          <tr>
-            <th>Field</th>
-            <th>Size (bits)</th>
-            <th>Value (binary)</th>
-            <th>Value</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {fields.map((field, index) => (
-            <tr key={index}>
-              <td>{field.title}</td>
-              <td>{field.length}</td>
-              <td>{field.bin}</td>
-              <td>{field.valueFn(field.bin)}</td>
-              <td>{field.description}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <AppView
+      ipHex={ipHex}
+      setIpHex={setIpHex}
+      fields={fields}
+      errors={errors}
+    />
   );
 }
 
