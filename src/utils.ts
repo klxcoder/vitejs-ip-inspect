@@ -104,6 +104,9 @@ export const getIpHeaderErrors = (fields: FieldBin[]): string[] => {
       `Actual: ${ipVersion}`,
     ];
   }
+  if (fields.length === 1) {
+    return ['Please provide IHL'];
+  }
   const ipHeaderLength = binaryToDecimal(fields[1].bin);
   if (ipHeaderLength < 5) {
     return [
@@ -156,7 +159,7 @@ export const getTcpHeaderErrors = (
   // TCP Segment
   let tcpSegmentBin = [
     tcpHeaderFields.map(field => field.id === 'tcp-checksum' ? '0'.repeat(16) : field.bin).join(''),
-    tcpHeaderOptionsFields[0].bin,
+    tcpHeaderOptionsFields[0]?.bin || '',
   ].join('');
   if (tcpSegmentBin.length % 16 === 8) {
     tcpSegmentBin += '0'.repeat(8);
