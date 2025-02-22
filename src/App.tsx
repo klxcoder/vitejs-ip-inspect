@@ -41,6 +41,10 @@ function App() {
         case 6: {
           // Process TCP
           const { fields: tcpHeaderFields, ipBinTmp: tcpHeaderBin } = getFields(TCP_HEADER_FIELDS, ipHeaderOptionsBin);
+          if (!tcpHeaderFields[4]) {
+            setErrors(['Please provide TCP Header Length']);
+            return;
+          }
           const tcpHeaderLength = binaryToDecimal(tcpHeaderFields[4].bin);
           const { fields: tcpHeaderOptionsFields } = getFields(getTcpHeaderOptionsFields(tcpHeaderLength), tcpHeaderBin);
           const tcpHeaderErrors = getTcpHeaderErrors(ipHeaderFields, tcpHeaderFields, tcpHeaderOptionsFields);
