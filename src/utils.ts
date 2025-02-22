@@ -116,13 +116,7 @@ export const getIpHeaderErrors = (fields: FieldBin[]): string[] => {
   }
   const words = ipHex.match(/.{4}/g)?.slice(0, ipHeaderLength * 2) || [];
   const checksumHex = words.splice(5, 1)[0]; // remove checksum
-  const calculatedChecksum = 0xffff - words.reduce((acc, hex) => {
-    const sum = acc + parseInt(hex, 16);
-    if (sum >= 0xffff) {
-      return sum - 0xffff;
-    }
-    return sum;
-  }, 0);
+  const calculatedChecksum = 0xffff - hexToDecimal(sum16bits(words.join('')));
   const calculatedChecksumHex = decimalToHex(calculatedChecksum);
   if (calculatedChecksumHex !== checksumHex) {
     return [
