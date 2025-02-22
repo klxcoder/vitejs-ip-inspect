@@ -134,8 +134,8 @@ export const TCP_HEADER_FIELDS: Field[] = [
     valueFn: binaryToDecimal,
   },
   {
-    id: 'tcp-data-offset',
-    title: 'Data Offset',
+    id: 'tcp-header-length',
+    title: 'Header Length',
     length: 4,
     description: 'The size of the TCP header in 32-bit words',
     valueFn: binaryToDecimal,

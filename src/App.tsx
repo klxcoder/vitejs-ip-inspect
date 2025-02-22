@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './table.css';
 import './AppView.css';
-import { binaryToDecimal, hexToBinary, getFields, getIpHeaderErrors, getIpHeaderOptionsFields, getTcpHeaderErrors } from './utils';
+import { binaryToDecimal, hexToBinary, getFields, getIpHeaderErrors, getIpHeaderOptionsFields, getTcpHeaderErrors, getTcpHeaderOptionsFields } from './utils';
 import { EXAMPLE_IP_HEX, IP_HEADER_FIELDS, TCP_HEADER_FIELDS } from './const';
 import { FieldBin } from './types';
 import AppView from './AppView';
@@ -40,13 +40,16 @@ function App() {
         }
         case 6: {
           // Process TCP
-          const { fields: tcpHeaderFields } = getFields(TCP_HEADER_FIELDS, ipHeaderOptionsBin);
-          const tcpHeaderErrors = getTcpHeaderErrors(ipHeaderFields, tcpHeaderFields);
+          const { fields: tcpHeaderFields, ipBinTmp: tcpHeaderBin } = getFields(TCP_HEADER_FIELDS, ipHeaderOptionsBin);
+          const tcpHeaderLength = binaryToDecimal(tcpHeaderFields[4].bin);
+          const { fields: tcpHeaderOptionsFields } = getFields(getTcpHeaderOptionsFields(tcpHeaderLength), tcpHeaderBin);
+          const tcpHeaderErrors = getTcpHeaderErrors(ipHeaderFields, tcpHeaderFields, tcpHeaderOptionsFields);
           setErrors(tcpHeaderErrors);
           if (tcpHeaderErrors.length > 0) {
             return;
           }
           fields.push(...tcpHeaderFields);
+          fields.push(...tcpHeaderOptionsFields);
           // TODO: Check TCP Header
           break;
         }

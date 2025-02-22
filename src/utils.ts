@@ -118,7 +118,11 @@ export const getIpHeaderErrors = (fields: FieldBin[]): string[] => {
   return [];
 }
 
-export const getTcpHeaderErrors = (ipHeaderFields: FieldBin[], tcpHeaderFields: FieldBin[]): string[] => {
+export const getTcpHeaderErrors = (
+  ipHeaderFields: FieldBin[],
+  tcpHeaderFields: FieldBin[],
+  tcpHeaderOptionsFields: FieldBin[],
+): string[] => {
   const sourceIpAddress = ipHeaderFields.find(field => field.id === 'ip-source-address')?.bin;
   const destinationIpAddress = ipHeaderFields.find(field => field.id === 'ip-destination-address')?.bin;
   const zeros = '0'.repeat(8);
@@ -136,12 +140,11 @@ export const getTcpHeaderErrors = (ipHeaderFields: FieldBin[], tcpHeaderFields: 
   let checksumBin: string = [
     tcpPseudoHeader,
     tcpHeaderFields.filter(field => field.id !== 'tcp-checksum').map(field => field.bin).join(''),
-    // TODO: Add tcp options and tcp data
+    tcpHeaderOptionsFields[0].bin,
   ].join('');
   if (checksumBin.length % 16 !== 8) {
     checksumBin += '0'.repeat(8);
   }
-  console.log(binaryToHex(checksumBin));
   const checksumArr = checksumBin.match(/.{16}/g) || [];
   const checksum = checksumArr.reduce((acc, bin) => {
     const sum = acc + binaryToDecimal(bin);
@@ -165,4 +168,17 @@ export const getIpHeaderOptionsFields = (ipHeaderLength: number) => {
     },
   ]
   return ipHeaderOptionsFields;
+}
+
+export const getTcpHeaderOptionsFields = (tcpHeaderLength: number) => {
+  const tcpHeaderOptionsFields: Field[] = [
+    {
+      id: 'tcp-options',
+      title: 'Options',
+      length: (tcpHeaderLength - 5) * 32,
+      description: 'The options field of the packet',
+      valueFn: binaryToHex,
+    },
+  ]
+  return tcpHeaderOptionsFields;
 }

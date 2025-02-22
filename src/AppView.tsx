@@ -42,7 +42,7 @@ function AppView({
             <tr key={index}>
               <td>{field.title}</td>
               <td>{field.length}</td>
-              <td>{field.bin}</td>
+              <td>{field.bin.length <= 32 ? field.bin : '---'}</td>
               <td>{field.valueFn(field.bin)}</td>
               <td>{field.description}</td>
             </tr>
