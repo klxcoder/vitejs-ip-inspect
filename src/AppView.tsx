@@ -2,6 +2,7 @@ import './table.css';
 import './AppView.css';
 import { ipHexFn } from './utils';
 import { FieldBin } from './types';
+import { IP_HEX_ARR } from './const';
 
 function AppView({
   ipHex,
@@ -17,6 +18,18 @@ function AppView({
 
   return (
     <div className="app">
+      <select
+        value={ipHex}
+        onChange={(e) => setIpHex(e.target.value)}
+      >
+        <option>{'Please select IP packet below'}</option>
+        {IP_HEX_ARR.map((ipHex) => (
+          <option
+            key={ipHex.id}
+            value={ipHex.hex}
+          >{ipHex.title}</option>
+        ))}
+      </select>
       <textarea
         value={ipHex}
         onChange={(e) => setIpHex(ipHexFn(e.target.value))}

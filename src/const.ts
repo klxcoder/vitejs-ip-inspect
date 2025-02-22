@@ -1,7 +1,49 @@
 import { Field } from "./types";
 import { binaryToDecimal, binToIpProtocol, binaryToHex, binaryToIP } from "./utils";
 
-export const EXAMPLE_IP_HEX = '4500003c660440004006d6b57f0000017f000001bd180007eecf60e400000000a002ffd7fe3000000204ffd70402080aba9bf91f0000000001030307'; // SYN packet
+type IP_HEX = {
+  id: string,
+  title: string,
+  hex: string,
+}
+
+export const IP_HEX_ARR: IP_HEX[] = [
+  {
+    id: '3-way-handshake-syn',
+    title: '3-way handshake [SYN]',
+    hex: '4500003c660440004006d6b57f0000017f000001bd180007eecf60e400000000a002ffd7fe3000000204ffd70402080aba9bf91f0000000001030307',
+  },
+  {
+    id: '3-way-handshake-sync-ack',
+    title: '3-way handshake [SYN, ACK]',
+    hex: '4500003c0000400040063cba7f0000017f0000010007bd18386acbc2eecf60e5a012ffcbfe3000000204ffd70402080aba9bf91fba9bf91f01030307',
+  },
+  {
+    id: '3-way-handshake-ack',
+    title: '3-way handshake [ACK]',
+    hex: '45000034660540004006d6bc7f0000017f000001bd180007eecf60e5386acbc380100200fe2800000101080aba9bf91fba9bf91f',
+  },
+  {
+    id: '4-way-handshake-fin-ack-client-server',
+    title: '4-way handshake [FIN, ACK] (Client -> Server)',
+    hex: '45000034660640004006d6bb7f0000017f000001bd180007eecf60e5386acbc380110200fe2800000101080abbeeb61eba9bf91f',
+  },
+  {
+    id: '4-way-handshake-ack-server-client',
+    title: '4-way handshake [ACK] (Server -> Client)',
+    hex: '45000034ab814000400691407f0000017f0000010007bd18386acbc3eecf60e680100200fe2800000101080abbeeb621bbeeb61e',
+  },
+  {
+    id: '4-way-handshake-fin-ack-server-client',
+    title: '4-way handshake [FIN, ACK] (Server -> Client)',
+    hex: '45000034ab8240004006913f7f0000017f0000010007bd18386acbc3eecf60e680110200fe2800000101080abbeeb621bbeeb61e',
+  },
+  {
+    id: '4-way-handshake-ack-client-server',
+    title: '4-way handshake [ACK] (Client -> Server)',
+    hex: '450000340000400040063cc27f0000017f000001bd180007eecf60e6386acbc480100200819500000101080abbeeb621bbeeb621',
+  },
+]
 
 export const IP_HEADER_FIELDS: Field[] = [
   {

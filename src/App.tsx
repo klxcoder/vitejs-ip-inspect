@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import './table.css';
 import './AppView.css';
 import { binaryToDecimal, hexToBinary, getFields, getIpHeaderErrors, getIpHeaderOptionsFields, getTcpHeaderErrors, getTcpHeaderOptionsFields } from './utils';
-import { EXAMPLE_IP_HEX, IP_HEADER_FIELDS, TCP_HEADER_FIELDS } from './const';
+import { IP_HEADER_FIELDS, TCP_HEADER_FIELDS } from './const';
 import { FieldBin } from './types';
 import AppView from './AppView';
 
 function App() {
-  const [ipHex, setIpHex] = useState(EXAMPLE_IP_HEX);
+  const [ipHex, setIpHex] = useState('');
   const [ipBin, setIpBin] = useState('');
   const [fields, setFields] = useState<FieldBin[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
