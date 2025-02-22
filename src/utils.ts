@@ -77,7 +77,7 @@ const sum16bits = (hex: string): string => {
   const words: string[] = hex.match(/.{4}/g)?.map(x => x) || [];
   const checksumNbr: number = words.reduce((acc, hex) => {
     const sum = acc + parseInt(hex, 16);
-    if (sum >= 0xffff) {
+    if (sum > 0xffff) {
       return sum - 0xffff;
     }
     return sum;
