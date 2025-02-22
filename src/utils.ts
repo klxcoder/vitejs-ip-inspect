@@ -85,6 +85,11 @@ const sum16bits = (hex: string): string => {
   return decimalToHex(checksumNbr);
 }
 
+const final1sComplement = (hex: string): string => {
+  const number = 0xffff - hexToDecimal(hex);
+  return decimalToHex(number);
+}
+
 export const getIpHeaderErrors = (fields: FieldBin[]): string[] => {
   const ipBin = fields.map(f => f.bin).join('');
   const ipHex = binaryToHex(ipBin);
@@ -140,26 +145,41 @@ export const getTcpHeaderErrors = (
   const ipTotalLength = binaryToDecimal(ipHeaderFields.find(field => field.id === 'ip-total-length')?.bin || '');
   const ipHeaderLength = binaryToDecimal(ipHeaderFields.find(field => field.id === 'ip-header-length')?.bin || '');
   const tcpLength = decimalToBinary(ipTotalLength - ipHeaderLength * 4, 16);
-  const tcpPseudoHeader: string = [
+  // TCP Pseudo Header
+  const tcpPseudoHeaderBin: string = [
     sourceIpAddress,
     destinationIpAddress,
     zeros,
     protocol,
     tcpLength,
   ].join('');
-  const tcpSegment = [
+  // TCP Segment
+  let tcpSegmentBin = [
     tcpHeaderFields.map(field => field.id === 'tcp-checksum' ? '0'.repeat(16) : field.bin).join(''),
     tcpHeaderOptionsFields[0].bin,
   ].join('');
-  let checksumBin: string = [
-    tcpPseudoHeader,
-    tcpSegment,
-  ].join('');
-  if (checksumBin.length % 16 === 8) {
-    checksumBin += '0'.repeat(8);
+  if (tcpSegmentBin.length % 16 === 8) {
+    tcpSegmentBin += '0'.repeat(8);
   }
-  const checksum = 0xffff - hexToDecimal(sum16bits(binaryToHex(checksumBin)));
-  console.log('checksum = ', decimalToHex(checksum));
+  const tcpPseudoHeaderPartialChecksum = sum16bits(binaryToHex(tcpPseudoHeaderBin));
+  const tcpSegmentPartialChecksum = sum16bits(binaryToHex(tcpSegmentBin));
+  const checksum = final1sComplement(sum16bits([
+    tcpPseudoHeaderPartialChecksum,
+    tcpSegmentPartialChecksum,
+  ].join('')));
+  const actualChecksum = binaryToHex(tcpHeaderFields.find(field => field.id === 'tcp-checksum')?.bin || '');
+  if (![
+    tcpPseudoHeaderPartialChecksum,
+    tcpSegmentPartialChecksum,
+    checksum,
+  ].includes(actualChecksum)) {
+    return [
+      `TCP Pseudo Header Partial Checksum: 0x${tcpPseudoHeaderPartialChecksum}`,
+      `TCP Segment Partial Checksum: 0x${tcpSegmentPartialChecksum}`,
+      `Full Checksum: 0x${checksum}`,
+      `Actual Checksum 0x${actualChecksum} do not match one of the above`,
+    ]
+  }
   return [];
 }
 
