@@ -137,16 +137,19 @@ export const getTcpHeaderErrors = (
     protocol,
     tcpLength,
   ].join('');
-  let checksumBin: string = [
-    tcpPseudoHeader,
-    tcpHeaderFields.filter(field => field.id !== 'tcp-checksum').map(field => field.bin).join(''),
+  const tcpSegment = [
+    tcpHeaderFields.map(field => field.id === 'tcp-checksum' ? '0'.repeat(16) : field.bin).join(''),
     tcpHeaderOptionsFields[0].bin,
   ].join('');
-  if (checksumBin.length % 16 !== 8) {
+  let checksumBin: string = [
+    tcpPseudoHeader,
+    tcpSegment,
+  ].join('');
+  if (checksumBin.length % 16 === 8) {
     checksumBin += '0'.repeat(8);
   }
   const checksumArr = checksumBin.match(/.{16}/g) || [];
-  const checksum = checksumArr.reduce((acc, bin) => {
+  const checksum = 0xffff - checksumArr.reduce((acc, bin) => {
     const sum = acc + binaryToDecimal(bin);
     if (sum >= 0xffff) {
       return sum - 0xffff;
