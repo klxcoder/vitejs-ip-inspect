@@ -51,6 +51,10 @@ function decimalToBinary(decimal: number, bits: number) {
   return decimal.toString(2).padStart(bits, '0');
 }
 
+function hexToDecimal(hex: string): number {
+  return parseInt(hex, 16);
+}
+
 export const getFields = (ipFields: Field[], ipBin: string): {
   fields: FieldBin[],
   ipBinTmp: string,
@@ -67,6 +71,18 @@ export const getFields = (ipFields: Field[], ipBin: string): {
     }
   }
   return { fields, ipBinTmp };
+}
+
+const sum16bits = (hex: string): string => {
+  const words: string[] = hex.match(/.{4}/g)?.map(x => x) || [];
+  const checksumNbr: number = words.reduce((acc, hex) => {
+    const sum = acc + parseInt(hex, 16);
+    if (sum >= 0xffff) {
+      return sum - 0xffff;
+    }
+    return sum;
+  }, 0);
+  return decimalToHex(checksumNbr);
 }
 
 export const getIpHeaderErrors = (fields: FieldBin[]): string[] => {
@@ -148,14 +164,7 @@ export const getTcpHeaderErrors = (
   if (checksumBin.length % 16 === 8) {
     checksumBin += '0'.repeat(8);
   }
-  const checksumArr = checksumBin.match(/.{16}/g) || [];
-  const checksum = 0xffff - checksumArr.reduce((acc, bin) => {
-    const sum = acc + binaryToDecimal(bin);
-    if (sum >= 0xffff) {
-      return sum - 0xffff;
-    }
-    return sum;
-  }, 0);
+  const checksum = 0xffff - hexToDecimal(sum16bits(binaryToHex(checksumBin)));
   console.log('checksum = ', decimalToHex(checksum));
   return [];
 }
